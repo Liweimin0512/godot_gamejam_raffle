@@ -14,12 +14,25 @@ class_name EntryListItem
 
 # 条目数据
 var entry: EntryResource = null
+var url: String = ""
+
+## 准备就绪
+func _ready() -> void:
+	# 设置点击事件
+	gui_input.connect(_on_gui_input)
+	
+	# 设置鼠标样式
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
 
 ## 设置条目数据
 ## [param data] - 参赛作品资源对象
 func setup(data: EntryResource) -> void:
 	entry = data
 	update_display()
+	
+	# 保存URL
+	url = entry.url
 	
 	# 连接信号（如果尚未连接）
 	if not weight_spinbox.value_changed.is_connected(_on_weight_value_changed):
@@ -50,7 +63,6 @@ func _update_game_image() -> void:
 	if entry.image:
 		game_image.texture = entry.image
 
-
 ## 更新开发日志状态显示
 func _update_devlog_status() -> void:
 	var has_devlog: bool = entry.has_devlog
@@ -68,3 +80,27 @@ func _on_weight_value_changed(value: float) -> void:
 	if entry:
 		entry.weight = value
 		# 如果需要，可以在这里添加代码通知其他系统权重已更改
+
+## 处理鼠标输入
+func _on_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_open_url()
+
+## 打开URL
+func _open_url() -> void:
+	if url.is_empty():
+		print("警告: 条目 '%s' 没有有效的URL" % entry.title)
+		return
+	
+	# 使用OS打开URL
+	OS.shell_open(url)
+	print("打开URL: %s" % url)
+
+## 鼠标进入时改变鼠标样式
+func _on_mouse_entered() -> void:
+	if not url.is_empty():
+		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+
+## 鼠标离开时恢复鼠标样式
+func _on_mouse_exited() -> void:
+	Input.set_default_cursor_shape(Input.CURSOR_ARROW)

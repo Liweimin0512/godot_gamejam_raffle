@@ -23,6 +23,7 @@ var carousel_speed: float = 0.2     # 轮播速度（降低以使动画更平滑
 var enable_carousel: bool = true    # 控制轮播激活状态
 var carousel_tween: Tween           # 用于平滑过渡的Tween
 var is_transitioning: bool = false  # 是否正在过渡中
+var continuous_direction: int = 1   # 连续移动方向: 1=向右, -1=向左
 
 # 立体效果变量
 var center_scale: float = 1.2     # 中心项目缩放
@@ -107,8 +108,8 @@ func _process(delta: float) -> void:
 		return
 	
 	# 更新轮播位置
-	carousel_position += carousel_speed * delta
-	if carousel_position >= 1.0:
+	carousel_position += carousel_speed * delta * continuous_direction
+	if carousel_position >= 1.0 or carousel_position <= -1.0:
 		carousel_position = 0.0
 		# 轮换一个作品
 		_rotate_carousel_entries()
@@ -131,11 +132,11 @@ func _rotate_carousel_entries() -> void:
 	for item in entry_nodes:
 		start_positions.append(item.position)
 	
-	# 计算目标位置（向左移动一个项目的宽度）
+	# 计算目标位置（根据方向移动一个项目的宽度）
 	var item_width = ENTRY_WIDTH + entries_list.get_theme_constant("separation")
 	for i in range(entry_nodes.size()):
 		var new_pos = start_positions[i]
-		new_pos.x -= item_width
+		new_pos.x -= item_width * continuous_direction  # 使用方向
 		target_positions.append(new_pos)
 	
 	# 创建过渡动画
@@ -148,9 +149,15 @@ func _rotate_carousel_entries() -> void:
 	
 	# 动画完成后重置位置并添加新项目
 	carousel_tween.chain().tween_callback(func():
-		# 移除第一个作品并添加到末尾
-		var first_entry = visible_entries.pop_front()
-		visible_entries.push_back(first_entry)
+		# 根据方向移动条目
+		if continuous_direction > 0:  # 向右移动
+			# 移除最后一个作品并添加到开头
+			var last_entry = visible_entries.pop_back()
+			visible_entries.push_front(last_entry)
+		else:  # 向左移动
+			# 移除第一个作品并添加到末尾
+			var first_entry = visible_entries.pop_front()
+			visible_entries.push_back(first_entry)
 		
 		# 更新UI
 		_update_carousel_items()
