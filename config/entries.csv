@@ -1,4 +1,4 @@
-游戏名称,游戏ID,游戏链接,是否有开发日志,作者,主观评价,图片,权重
+﻿游戏名称,游戏ID,游戏链接,是否有开发日志,作者,主观评价,图片,权重
 3 & 4,life-dieth,https://xusir.itch.io/life-dieth,没有,xusir,看起来好难，其实蛮简单，适合音乐，节奏,res://assets/entries/game_life-dieth.png,1
 3-4,4,https://itpika.itch.io/3-4,没有,Itpika,似乎没有什么主题相关性？,res://assets/entries/game_4.png,1
 Another Me,another-me,https://salpha0.itch.io/another-me,有,Salpha0,目前为止我最喜欢的解谜游戏,res://assets/entries/game_another-me.png,1
@@ -10,15 +10,15 @@ Fade on Sight,fadeonsight,https://racolw.itch.io/fadeonsight,有,RacolW,我有�
 FreeFall,freefall,https://kitssu1.itch.io/freefall,有,kitssu1,0,res://assets/entries/game_freefall.png,1
 GameJamDemo,gamejamdemo,https://boydzhang.itch.io/gamejamdemo,有,BoydZhang,名字缺乏创意,res://assets/entries/game_gamejamdemo.png,1
 hero_story,hero-story,https://zxygame.itch.io/hero-story,有,zxygame,我喜欢这个游戏！,res://assets/entries/game_hero-story.png,1
-investigator,investigator,https://zuiyu1998.itch.io/investigator,没有,zuiyu1998,三消游戏的底子，缺少教学引导,res://assets/entries/game_3.png,1
+investigator,investigator,https://zuiyu1998.itch.io/investigator,没有,zuiyu1998,三消游戏的底子，缺少教学引导,,1
 "Observe, collapse, wait for Godot",observe-collapse-wait-for-godot,https://yuugata.itch.io/observe-collapse-wait-for-godot,有,Yuugata,有点折磨人的游戏,res://assets/entries/game_observe-collapse-wait-for-godot.png,1
-roboy (test),roboy-test,https://hydratedmoon244.itch.io/roboy-test,没有,hydratedmoon244,0,res://assets/entries/game_4.png,1
+roboy (test),roboy-test,https://hydratedmoon244.itch.io/roboy-test,没有,hydratedmoon244,0,,1
 Shape Pipeline/形状通道,shape-pipeline,https://fantasiastudio.itch.io/shape-pipeline,没有,fantasiaStudio,经典推箱子，我喜欢,res://assets/entries/game_shape-pipeline.png,1
 UnReal Objects,unreal-objects,https://gove.itch.io/unreal-objects,有,Gove,0,res://assets/entries/game_unreal-objects.png,1
 Vacuum Bumper Ship,vaccum-bumper-ship,https://tungstenflow.itch.io/vacuum-bumper-ship,有,TungstenFlow,太空碰碰车？老实说我没太明白,res://assets/entries/game_vaccum-bumper-ship.png,1
 vision,vision,https://yvmoux.itch.io/vision,有,顶尖游戏BUG开发者,网友说像猜保险箱密码，我深表赞同,res://assets/entries/game_vision.png,1
 保护戈多,bhgd,https://yvmoux.itch.io/bhgd,有,yvmoux,作者说没有主题相关性,res://assets/entries/game_bhgd.png,1
-缤纷使者,changecolor,https://phinkabon.itch.io/changecolor,有,Phinkabon,一个推箱子游戏,res://assets/entries/game_changecolor.png,1
+缤纷使者,changecolor,https://phinkabon.itch.io/changecolor,有,Phinkabon,一个推箱子游戏,res://assets/entries/game_1.png,1
 存在或者不存在的墙,jam,https://eeerqwwrq.itch.io/jam,没有,eeerqwwrq,缺少引导,res://assets/entries/game_jam.png,1
 到底多少钱,howmuch,https://vandoor.itch.io/howmuch,有,VANDOOR,游戏没有发布，是上传的源文件,res://assets/entries/game_howmuch.png,1
 点亮灯泡,hello-world,https://2000studio.itch.io/hello-world,有,2000 Studio,0,res://assets/entries/game_hello-world.png,1
@@ -27,9 +27,9 @@ vision,vision,https://yvmoux.itch.io/vision,有,顶尖游戏BUG开发者,网友�
 平圆方的大冒险,pyfdef,https://hwy331.itch.io/pyfdef,有,hwy331,0,res://assets/entries/game_pyfdef.png,1
 深水王子与饕鬄海,deepwater,https://phixcat.itch.io/deepwater,有,phiXcat,1,res://assets/entries/game_deepwater.png,1
 神秘动物学家,the-trader,https://steeleeth000.itch.io/the-trader,没有,SteveLeeTH000,1,res://assets/entries/game_the-trader.png,1
-视差俄罗斯方块,upside-down,https://qiiiii24.itch.io/upside-down,有,qiiiii24,0,res://assets/entries/game_upside-down.png,1
+视差俄罗斯方块,upside-down,https://qiiiii24.itch.io/2025331534,有,qiiiii24,0,res://assets/entries/game_2025331534.png,1
 四还是三？,2000,https://pure-nonentity.itch.io/2000,没有,pure_nonentity,剧情叙事，黑色幽默,res://assets/entries/game_2000.png,1
-四象,2025331534,https://所罗门大海鸥.itch.io/2025331534,没有,所罗门大海鸥,0,res://assets/entries/game_2025331534.png,1
+四象,2025331534,https://所罗门大海鸥.itch.io/2025331534,没有,所罗门大海鸥,0,,1
 天地翻覆 ,upside-down,https://demonjerk.itch.io/upside-down,有,demonjerk,重力，平台解密,res://assets/entries/game_upside-down.png,1
 颜色跳跃,changecolor,https://yinsull.itch.io/changecolor,有,yinsull,制作迅速，相对完整，想法很好，但操作可优化，有进一步优化和扩展的空间,res://assets/entries/game_changecolor.png,1
 眼见为实Seeing is believing. ,seeing-is-believing,https://supernail.itch.io/seeing-is-believing,有,SuperNail,很不错，我喜欢画风，但好难啊！,res://assets/entries/game_seeing-is-believing.png,1

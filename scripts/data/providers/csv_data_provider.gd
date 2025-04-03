@@ -2,7 +2,10 @@ extends BaseDataProvider
 class_name CSVDataProvider
 # CSV数据提供者 - 从CSV文件加载
 
-func fetch_data(params = {}):
+## 获取数据
+## [param params] - 参数
+## [return] 是否成功
+func fetch_data(params : Dictionary = {}) -> bool:
 	if not params.has("path"):
 		data_error.emit("未指定文件路径")
 		return false
@@ -41,11 +44,14 @@ func fetch_data(params = {}):
 					"游戏名称":
 						entry_data["title"] = value
 					"作者":
-						entry_data["user"] = value
+						entry_data["author"] = value
 					"是否有开发日志":
 						entry_data["has_devlog"] = (value == "有")
 					"图片":
-						entry_data["image"] = value					
+						if ResourceLoader.exists(value):
+							entry_data["image"] = load(value)
+						else:
+							push_warning("无法加载图片: %s" % value)
 					_:
 						# 其他属性作为自定义属性
 						entry_data[header] = value

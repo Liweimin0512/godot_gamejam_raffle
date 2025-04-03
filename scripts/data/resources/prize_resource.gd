@@ -1,5 +1,6 @@
 extends Resource
 class_name PrizeResource
+
 ## 奖项数据资源
 
 ## 基本信息

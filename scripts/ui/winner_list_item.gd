@@ -17,4 +17,4 @@ func setup(data):
 func update_display():
 	if winner_data:
 		title_label.text = winner_data.title
-		author_label.text = winner_data.author if winner_data.has("author") else ""
+		author_label.text = winner_data.author

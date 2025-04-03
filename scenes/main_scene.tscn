@@ -59,19 +59,21 @@ text = "参赛作品列表"
 horizontal_alignment = 1
 
 [node name="EntriesContainer" type="ScrollContainer" parent="MainPanel/ContentContainer/EntriesPanel/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="EntriesList" type="GridContainer" parent="MainPanel/ContentContainer/EntriesPanel/VBoxContainer/EntriesContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 4
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+
+[node name="EntriesList" type="HBoxContainer" parent="MainPanel/ContentContainer/EntriesPanel/VBoxContainer/EntriesContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+alignment = 1
 
 [node name="WinnersPanel" type="Panel" parent="MainPanel/ContentContainer"]
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.6
@@ -93,15 +95,19 @@ horizontal_alignment = 1
 [node name="WinnersContainer" type="ScrollContainer" parent="MainPanel/ContentContainer/WinnersPanel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
 
-[node name="WinnersList" type="VBoxContainer" parent="MainPanel/ContentContainer/WinnersPanel/VBoxContainer/WinnersContainer"]
+[node name="WinnersList" type="HBoxContainer" parent="MainPanel/ContentContainer/WinnersPanel/VBoxContainer/WinnersContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 15
+alignment = 1
 
 [node name="DrawArea" type="Panel" parent="MainPanel"]
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 
 [node name="CurrentWinner" type="Label" parent="MainPanel/DrawArea"]
@@ -118,7 +124,7 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -168,6 +174,7 @@ layout_mode = 2
 text = "导出结果"
 
 [node name="ExportDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
 title = "导出中奖名单"
 initial_position = 2
 size = Vector2i(800, 500)
