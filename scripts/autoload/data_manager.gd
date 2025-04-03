@@ -9,21 +9,23 @@ signal data_error(message)
 const EntryResource = preload("res://scripts/data/resources/entry_resource.gd")
 
 # 数据提供者/策略
-var _data_providers = {}
-var _current_provider = null
+var _data_providers : Dictionary[String, BaseDataProvider] = {}
+var _current_provider : BaseDataProvider = null
 
-func _ready():
+func _ready() -> void:
 	# 注册默认的数据提供者
-	register_data_provider("local_file", load("res://scripts/data/providers/file_data_provider.gd").new())
-	register_data_provider("itch_io", load("res://scripts/data/providers/itchio_data_provider.gd").new())
-	register_data_provider("json", load("res://scripts/data/providers/json_data_provider.gd").new())
-	register_data_provider("csv", load("res://scripts/data/providers/csv_data_provider.gd").new())
+	register_data_provider("local_file", FileDataProvider.new())
+	register_data_provider("itch_io", ItchioDataProvider.new())
+	register_data_provider("json", JSONDataProvider.new())
+	register_data_provider("csv", CSVDataProvider.new())
 
-# 注册数据提供者
-func register_data_provider(provider_id, provider):
+## 注册数据提供者
+## [param provider_id] - 提供者ID
+## [param provider] - 
+func register_data_provider(provider_id, provider: BaseDataProvider):
 	_data_providers[provider_id] = provider
-	provider.connect("data_loaded", _on_provider_data_loaded)
-	provider.connect("data_error", _on_provider_data_error)
+	provider.data_loaded.connect(_on_provider_data_loaded)
+	provider.data_error.connect(_on_provider_data_error)
 
 # 获取数据 - 使用策略模式
 func fetch_data(provider_id, params = {}):

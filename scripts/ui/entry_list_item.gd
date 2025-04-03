@@ -11,10 +11,6 @@ extends PanelContainer
 
 # 条目数据
 var entry_data = null
-var raffle_manager
-
-func _ready():
-	raffle_manager = get_node("/root/RaffleManager")
 
 # 设置条目数据
 func setup(data):
@@ -25,7 +21,7 @@ func setup(data):
 func update_display():
 	if entry_data:
 		title_label.text = entry_data.title
-		author_label.text = entry_data.user
+		author_label.text = entry_data.author if entry_data.has("author") else ""
 		weight_spinbox.value = entry_data.weight
 		
 		# 设置游戏图片
@@ -47,9 +43,3 @@ func update_display():
 func _on_weight_value_changed(value):
 	if entry_data:
 		entry_data.weight = value
-		
-		# 在raffle_manager中也更新条目权重
-		for i in range(raffle_manager.entries.size()):
-			if raffle_manager.entries[i].id == entry_data.id:
-				raffle_manager.entries[i].weight = value
-				break

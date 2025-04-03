@@ -8,9 +8,6 @@ extends PanelContainer
 # 获奖者数据
 var winner_data = null
 
-func _ready():
-	pass
-
 # 设置获奖者数据
 func setup(data):
 	winner_data = data
@@ -20,4 +17,4 @@ func setup(data):
 func update_display():
 	if winner_data:
 		title_label.text = winner_data.title
-		author_label.text = winner_data.user
+		author_label.text = winner_data.author if winner_data.has("author") else ""

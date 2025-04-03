@@ -1,4 +1,4 @@
-extends "../base_data_provider.gd"
+extends BaseDataProvider
 class_name JSONDataProvider
 # JSON数据提供者 - 从JSON字符串加载
 

@@ -120,7 +120,8 @@ func get_available_prizes_count():
 			count += prize.remaining_count
 	return count
 
-# 获取所有未获奖的参赛者
+## 获取所有未获奖的参赛者
+## [param prize_to_draw] - 当前抽奖的奖项
 func get_available_entries(prize_to_draw = null):
 	var drawn_entries = []
 	

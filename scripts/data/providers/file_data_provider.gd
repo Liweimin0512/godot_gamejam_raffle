@@ -1,4 +1,4 @@
-extends "../base_data_provider.gd"
+extends BaseDataProvider
 class_name FileDataProvider
 # 文件数据提供者 - 从本地文件加载
 

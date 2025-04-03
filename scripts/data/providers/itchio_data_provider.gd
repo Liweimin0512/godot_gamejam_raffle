@@ -1,4 +1,4 @@
-extends "../base_data_provider.gd"
+extends BaseDataProvider
 class_name ItchioDataProvider
 # Itch.io数据提供者 - 从Itch.io加载GameJam数据
 

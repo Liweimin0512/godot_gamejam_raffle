@@ -1,11 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://bs0xxs6e5yg5x"]
+[gd_scene load_steps=3 format=3 uid="uid://bs0xxs6e5yg5x"]
 
 [ext_resource type="Script" uid="uid://del4fgomwaydo" path="res://scripts/main.gd" id="1_dxrvt"]
-[ext_resource type="PackedScene" uid="uid://dtl6p2xbnqkpq" path="res://scenes/ui/entry_list_panel.tscn" id="2_qmrny"]
-[ext_resource type="PackedScene" uid="uid://cyqw4f3wmygfa" path="res://scenes/ui/prize_panel.tscn" id="3_yvj6o"]
-[ext_resource type="PackedScene" uid="uid://ddcpwjr4bhc7o" path="res://scenes/ui/draw_area.tscn" id="4_y1lqi"]
-[ext_resource type="PackedScene" uid="uid://bwm0mfnnf5s4s" path="res://scenes/ui/winner_list_panel.tscn" id="5_e0lq0"]
-[ext_resource type="PackedScene" path="res://scenes/ui/dialogs_container.tscn" id="6_00yft"]
+[ext_resource type="PackedScene" uid="uid://cx1tmo7hihxlk" path="res://scenes/ui/main_screen.tscn" id="2_0wfyh"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -16,113 +12,5 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dxrvt")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="MainScreen" parent="." instance=ExtResource("2_0wfyh")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.129412, 0.14902, 0.180392, 1)
-
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="HeaderContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Title" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-text = "GameJam抽奖系统"
-
-[node name="MenuContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HeaderContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="LoadButton" type="Button" parent="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer"]
-layout_mode = 2
-text = "加载数据"
-
-[node name="LoadCSVButton" type="Button" parent="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer"]
-layout_mode = 2
-text = "加载CSV"
-
-[node name="ItchIoButton" type="Button" parent="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer"]
-layout_mode = 2
-text = "从itch.io导入"
-
-[node name="FilterButton" type="Button" parent="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer"]
-layout_mode = 2
-text = "设置权重"
-
-[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer"]
-layout_mode = 2
-text = "重置抽奖"
-
-[node name="MainContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 20
-
-[node name="LeftPanel" type="VBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="EntryListPanel" parent="MarginContainer/VBoxContainer/MainContainer/LeftPanel" instance=ExtResource("2_qmrny")]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="PrizePanel" parent="MarginContainer/VBoxContainer/MainContainer/LeftPanel" instance=ExtResource("3_yvj6o")]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="CenterPanel" type="VBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.5
-
-[node name="DrawArea" parent="MarginContainer/VBoxContainer/MainContainer/CenterPanel" instance=ExtResource("4_y1lqi")]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="RightPanel" type="VBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="WinnerListPanel" parent="MarginContainer/VBoxContainer/MainContainer/RightPanel" instance=ExtResource("5_e0lq0")]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="DialogsContainer" parent="." instance=ExtResource("6_00yft")]
-visible = false
-layout_mode = 1
-
-[connection signal="pressed" from="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer/LoadButton" to="." method="_on_load_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer/LoadCSVButton" to="." method="_on_load_csv_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer/ItchIoButton" to="." method="_on_itch_io_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer/FilterButton" to="." method="_on_filter_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/HeaderContainer/MenuContainer/ResetButton" to="." method="_on_reset_button_pressed"]
-[connection signal="add_prize_requested" from="MarginContainer/VBoxContainer/MainContainer/LeftPanel/PrizePanel" to="." method="_on_add_prize_requested"]
-[connection signal="raffle_completed" from="MarginContainer/VBoxContainer/MainContainer/CenterPanel/DrawArea" to="." method="_on_raffle_completed"]
-[connection signal="raffle_started" from="MarginContainer/VBoxContainer/MainContainer/CenterPanel/DrawArea" to="." method="_on_raffle_started"]
-[connection signal="export_requested" from="MarginContainer/VBoxContainer/MainContainer/RightPanel/WinnerListPanel" to="." method="_on_export_requested"]
-[connection signal="file_selected" from="DialogsContainer" to="." method="_on_file_selected"]
-[connection signal="jam_id_confirmed" from="DialogsContainer" to="." method="_on_jam_id_confirmed"]
-[connection signal="prize_added" from="DialogsContainer" to="." method="_on_prize_added"]
-[connection signal="save_file_selected" from="DialogsContainer" to="." method="_on_save_file_selected"]

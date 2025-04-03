@@ -1,15 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://blx2qvbgrdnko"]
+[gd_scene load_steps=3 format=3 uid="uid://b5srmidndewph"]
 
-[ext_resource type="Script" uid="uid://c1hfq24lfyxv8" path="res://scripts/main_scene.gd" id="1_0ow8o"]
+[ext_resource type="Script" path="res://scripts/simplified_raffle.gd" id="1_iekca"]
+[ext_resource type="PackedScene" uid="uid://cf3vc1eeykw5a" path="res://scenes/ui/animations/raffle_animation.tscn" id="2_wfyok"]
 
-[node name="MainScene" type="Control"]
+[node name="SimplifiedRaffle" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_0ow8o")
+script = ExtResource("1_iekca")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -35,14 +36,47 @@ theme_override_font_sizes/font_size = 36
 text = "GameJam 抽奖系统"
 horizontal_alignment = 1
 
-[node name="ContentContainer" type="VSplitContainer" parent="MainPanel"]
+[node name="ControlPanel" type="HBoxContainer" parent="MainPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="DevlogFilter" type="CheckBox" parent="MainPanel/ControlPanel"]
+layout_mode = 2
+button_pressed = true
+text = "只显示有开发日志的作品"
+
+[node name="HSeparator" type="HSeparator" parent="MainPanel/ControlPanel"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="DrawButton" type="Button" parent="MainPanel/ControlPanel"]
+layout_mode = 2
+text = "开始抽奖"
+
+[node name="HSeparator2" type="HSeparator" parent="MainPanel/ControlPanel"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="ResetButton" type="Button" parent="MainPanel/ControlPanel"]
+layout_mode = 2
+text = "重置抽奖"
+
+[node name="HSeparator3" type="HSeparator" parent="MainPanel/ControlPanel"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="ExportButton" type="Button" parent="MainPanel/ControlPanel"]
+layout_mode = 2
+text = "导出结果"
+
+[node name="ContentContainer" type="HSplitContainer" parent="MainPanel"]
 layout_mode = 2
 size_flags_vertical = 3
-split_offset = 200
 
 [node name="EntriesPanel" type="Panel" parent="MainPanel/ContentContainer"]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.65
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainPanel/ContentContainer/EntriesPanel"]
 layout_mode = 1
@@ -62,19 +96,15 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="EntriesList" type="GridContainer" parent="MainPanel/ContentContainer/EntriesPanel/VBoxContainer/EntriesContainer"]
-unique_name_in_owner = true
+[node name="EntriesList" type="VBoxContainer" parent="MainPanel/ContentContainer/EntriesPanel/VBoxContainer/EntriesContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 4
 
 [node name="WinnersPanel" type="Panel" parent="MainPanel/ContentContainer"]
 layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 0.6
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.35
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainPanel/ContentContainer/WinnersPanel"]
 layout_mode = 1
@@ -95,7 +125,6 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="WinnersList" type="VBoxContainer" parent="MainPanel/ContentContainer/WinnersPanel/VBoxContainer/WinnersContainer"]
-unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -105,7 +134,6 @@ custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 
 [node name="CurrentWinner" type="Label" parent="MainPanel/DrawArea"]
-unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -123,54 +151,15 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ParticlesContainer" type="Control" parent="MainPanel/DrawArea"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="ControlPanel" type="HBoxContainer" parent="MainPanel"]
-layout_mode = 2
-alignment = 1
-
-[node name="DevlogFilter" type="CheckBox" parent="MainPanel/ControlPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-button_pressed = true
-text = "只显示有开发日志的作品"
-
-[node name="HSeparator" type="HSeparator" parent="MainPanel/ControlPanel"]
-custom_minimum_size = Vector2(20, 0)
-layout_mode = 2
-
-[node name="DrawButton" type="Button" parent="MainPanel/ControlPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "开始抽奖"
-
-[node name="HSeparator2" type="HSeparator" parent="MainPanel/ControlPanel"]
-custom_minimum_size = Vector2(20, 0)
-layout_mode = 2
-
-[node name="ResetButton" type="Button" parent="MainPanel/ControlPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "重置抽奖"
-
-[node name="HSeparator3" type="HSeparator" parent="MainPanel/ControlPanel"]
-custom_minimum_size = Vector2(20, 0)
-layout_mode = 2
-
-[node name="ExportButton" type="Button" parent="MainPanel/ControlPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "导出结果"
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="ExportDialog" type="FileDialog" parent="."]
 title = "导出中奖名单"
 initial_position = 2
 size = Vector2i(800, 500)
+ok_button_text = "保存"
 access = 2
 root_subfolder = "godot_gamejam_raffle/exports"
 filters = PackedStringArray("*.csv")

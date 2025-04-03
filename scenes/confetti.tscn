@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dd1cqwjj58ykf"]
 
-[ext_resource type="Script" path="res://scripts/confetti.gd" id="1_qlsuj"]
+[ext_resource type="Script" uid="uid://s5lmjrcdc5cb" path="res://scripts/confetti.gd" id="1_qlsuj"]
 
 [sub_resource type="Gradient" id="Gradient_ehtkk"]
 offsets = PackedFloat32Array(0, 0.338235, 0.676471, 1)

@@ -11,18 +11,17 @@ config_version=5
 [application]
 
 config/name="GameJam 抽奖系统"
-run/main_scene="uid://bs0xxs6e5yg5x"
+run/main_scene="uid://blx2qvbgrdnko"
 config/features=PackedStringArray("4.4", "Mobile")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Singletons="*res://scripts/autoload/singletons.gd"
-RaffleManager="*res://scripts/core/raffle_manager.gd"
-DataManager="*res://scripts/data/data_manager.gd"
-ConfigManager="*res://scripts/config/config_manager.gd"
-EffectManager="*res://scripts/effects/effect_manager.gd"
-UIManager="*res://scripts/ui/ui_manager.gd"
+RaffleManager="*res://scripts/autoload/raffle_manager.gd"
+DataManager="*res://scripts/autoload/data_manager.gd"
+ConfigManager="*res://scripts/autoload/config_manager.gd"
+EffectManager="*res://scripts/autoload/effect_manager.gd"
+UIManager="*res://scripts/autoload/ui_manager.gd"
 
 [display]
 
