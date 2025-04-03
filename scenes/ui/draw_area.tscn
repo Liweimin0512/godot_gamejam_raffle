@@ -1,0 +1,195 @@
+[gd_scene load_steps=4 format=3 uid="uid://ddcpwjr4bhc7o"]
+
+[ext_resource type="Script" uid="uid://bujarsgblvdxu" path="res://scripts/ui/draw_area.gd" id="1_7olvk"]
+
+[sub_resource type="Animation" id="Animation_fh8jr"]
+resource_name = "capsule_drop"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CapsuleMachine/Capsule:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1.1, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2),
+"transitions": PackedFloat32Array(0.5, 2, 1, 0.5, 2, 0.5, 2, 0.5, 2, 1),
+"update": 0,
+"values": [Vector2(0, -50), Vector2(0, 50), Vector2(0, 250), Vector2(20, 250), Vector2(-10, 250), Vector2(5, 250), Vector2(-3, 250), Vector2(2, 250), Vector2(0, 250), Vector2(0, 250)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CapsuleMachine/Capsule:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 1.1, 1.3, 1.5, 1.7, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 6.28319, 12.5664, 12.9122, 13.0649, 13.1452, 13.1452]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CapsuleMachine/Capsule:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1.1, 1.3, 1.5, 1.7, 1.8, 1.9, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1, 1), Vector2(1.1, 0.9), Vector2(0.95, 1.05), Vector2(1.02, 0.98), Vector2(0.99, 1.01), Vector2(1, 1), Vector2(1, 1)]
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(2),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_on_capsule_animation_finished"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_7j0l1"]
+_data = {
+&"capsule_drop": SubResource("Animation_fh8jr")
+}
+
+[node name="DrawArea" type="Panel"]
+custom_minimum_size = Vector2(0, 350)
+script = ExtResource("1_7olvk")
+
+[node name="CapsuleMachine" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -175.0
+offset_right = 150.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MachineLabel" type="Label" parent="CapsuleMachine"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -65.5
+offset_top = -13.0
+offset_right = 65.5
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "扭蛋机（占位图形）"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Capsule" type="ColorRect" parent="CapsuleMachine"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -225.0
+offset_right = -70.0
+offset_bottom = -145.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(40, 40)
+color = Color(0.85098, 0.243137, 0.243137, 1)
+
+[node name="CapsuleLabel" type="Label" parent="CapsuleMachine/Capsule"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "???"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CurrentPrizeLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -111.0
+offset_top = 10.0
+offset_right = 111.0
+offset_bottom = 36.0
+grow_horizontal = 2
+text = "当前抽取: 一等奖"
+horizontal_alignment = 1
+
+[node name="DrumRollAudio" type="AudioStreamPlayer" parent="."]
+
+[node name="CapsuleOpenAudio" type="AudioStreamPlayer" parent="."]
+
+[node name="WinnerLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -145.5
+offset_top = -104.0
+offset_right = 145.5
+offset_bottom = -54.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "获奖者将在这里显示"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ParticlesContainer" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_7j0l1")
+}
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -75.0
+offset_top = -45.0
+offset_right = 75.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "开始抽奖"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

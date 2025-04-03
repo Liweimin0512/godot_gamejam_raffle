@@ -1,0 +1,259 @@
+[gd_scene load_steps=2 format=3 uid="uid://blx2qvbgrdnko"]
+
+[ext_resource type="Script" uid="uid://c1hfq24lfyxv8" path="res://scripts/main_scene.gd" id="1_0ow8o"]
+
+[node name="MainScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0ow8o")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.227451, 0.227451, 0.313726, 1)
+
+[node name="MainPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Title" type="Label" parent="MainPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "GameJam 抽奖系统"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="DataPanel" type="Panel" parent="MainPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(350, 400)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/DataPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer"]
+layout_mode = 2
+text = "参赛作品"
+horizontal_alignment = 1
+
+[node name="EntriesContainer" type="ScrollContainer" parent="MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EntriesList" type="VBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer/EntriesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="FetchDataButton" type="Button" parent="MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "获取网络数据"
+
+[node name="ImportButton" type="Button" parent="MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "导入数据"
+
+[node name="PrizePanel" type="Panel" parent="MainPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(350, 400)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/PrizePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="MainPanel/VBoxContainer/HBoxContainer/PrizePanel/VBoxContainer"]
+layout_mode = 2
+text = "奖项设置"
+horizontal_alignment = 1
+
+[node name="PrizesContainer" type="ScrollContainer" parent="MainPanel/VBoxContainer/HBoxContainer/PrizePanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PrizesList" type="VBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/PrizePanel/VBoxContainer/PrizesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="AddPrizeButton" type="Button" parent="MainPanel/VBoxContainer/HBoxContainer/PrizePanel/VBoxContainer"]
+layout_mode = 2
+text = "添加奖项"
+
+[node name="MarginContainer" type="MarginContainer" parent="MainPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="WinnersPanel" type="Panel" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/WinnersPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/WinnersPanel/VBoxContainer"]
+layout_mode = 2
+text = "获奖名单"
+horizontal_alignment = 1
+
+[node name="WinnersContainer" type="ScrollContainer" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/WinnersPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="WinnersList" type="VBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/WinnersPanel/VBoxContainer/WinnersContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="DrawButton" type="Button" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+text = "开始抽奖"
+
+[node name="ResetButton" type="Button" parent="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+text = "重置抽奖"
+
+[node name="DrawArea" type="Panel" parent="MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
+[node name="CurrentWinner" type="Label" parent="MainPanel/VBoxContainer/DrawArea"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ParticlesContainer" type="Control" parent="MainPanel/VBoxContainer/DrawArea"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="PrizeDialog" type="AcceptDialog" parent="."]
+title = "添加奖项"
+initial_position = 2
+size = Vector2i(400, 300)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PrizeDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 392.0
+offset_bottom = 251.0
+theme_override_constants/separation = 10
+
+[node name="PrizeNameContainer" type="HBoxContainer" parent="PrizeDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PrizeDialog/VBoxContainer/PrizeNameContainer"]
+layout_mode = 2
+text = "奖项名称:"
+
+[node name="PrizeName" type="LineEdit" parent="PrizeDialog/VBoxContainer/PrizeNameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PrizeCountContainer" type="HBoxContainer" parent="PrizeDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PrizeDialog/VBoxContainer/PrizeCountContainer"]
+layout_mode = 2
+text = "奖项数量:"
+
+[node name="PrizeCount" type="SpinBox" parent="PrizeDialog/VBoxContainer/PrizeCountContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+value = 1.0
+
+[node name="ErrorLabel" type="Label" parent="PrizeDialog/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 2
+size = Vector2i(600, 400)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.json ; JSON Files")
+
+[node name="MessageDialog" type="AcceptDialog" parent="."]
+title = "提示"
+initial_position = 2
+
+[node name="DrawAnimation" type="AnimationPlayer" parent="."]
+
+[connection signal="pressed" from="MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer/HBoxContainer/FetchDataButton" to="." method="_on_fetch_data_button_pressed"]
+[connection signal="pressed" from="MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
+[connection signal="pressed" from="MainPanel/VBoxContainer/HBoxContainer/PrizePanel/VBoxContainer/AddPrizeButton" to="." method="_on_add_prize_button_pressed"]
+[connection signal="pressed" from="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/DrawButton" to="." method="_on_draw_button_pressed"]
+[connection signal="pressed" from="MainPanel/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/ResetButton" to="." method="_on_reset_button_pressed"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_completed"]
+[connection signal="confirmed" from="PrizeDialog" to="." method="_on_prize_dialog_confirmed"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]

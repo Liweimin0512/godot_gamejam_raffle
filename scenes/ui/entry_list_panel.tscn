@@ -1,0 +1,46 @@
+[gd_scene load_steps=2 format=3 uid="uid://dtl6p2xbnqkpq"]
+
+[ext_resource type="Script" uid="uid://dpn2r522w87rd" path="res://scripts/ui/entry_list_panel.gd" id="1_o5djp"]
+
+[node name="EntryListPanel" type="Panel"]
+custom_minimum_size = Vector2(350, 200)
+script = ExtResource("1_o5djp")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "参赛作品"
+horizontal_alignment = 1
+
+[node name="EntriesContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EntriesList" type="VBoxContainer" parent="VBoxContainer/EntriesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ImportButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "导入数据"
+
+[node name="FilterButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "筛选条件"
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/FilterButton" to="." method="_on_filter_button_pressed"]

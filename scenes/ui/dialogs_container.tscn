@@ -1,0 +1,154 @@
+[gd_scene load_steps=3 format=3 uid="uid://dn18cnaqh6lkq"]
+
+[ext_resource type="Script" path="res://scripts/ui/dialogs_container.gd" id="1_6tqqh"]
+[ext_resource type="Script" path="res://scripts/ui/filter_dialog.gd" id="2_f4bhg"]
+
+[node name="DialogsContainer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6tqqh")
+
+[node name="PrizeDialog" type="AcceptDialog" parent="."]
+title = "添加奖项"
+initial_position = 2
+size = Vector2i(400, 200)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PrizeDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 392.0
+offset_bottom = 151.0
+theme_override_constants/separation = 10
+
+[node name="PrizeNameContainer" type="HBoxContainer" parent="PrizeDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PrizeDialog/VBoxContainer/PrizeNameContainer"]
+layout_mode = 2
+text = "奖项名称:"
+
+[node name="PrizeName" type="LineEdit" parent="PrizeDialog/VBoxContainer/PrizeNameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PrizeCountContainer" type="HBoxContainer" parent="PrizeDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PrizeDialog/VBoxContainer/PrizeCountContainer"]
+layout_mode = 2
+text = "奖项数量:"
+
+[node name="PrizeCount" type="SpinBox" parent="PrizeDialog/VBoxContainer/PrizeCountContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+value = 1.0
+
+[node name="ErrorLabel" type="Label" parent="PrizeDialog/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "打开JSON文件"
+initial_position = 2
+size = Vector2i(600, 400)
+ok_button_text = "打开"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.json ; JSON Files")
+
+[node name="SaveFileDialog" type="FileDialog" parent="."]
+title = "保存抽奖结果"
+initial_position = 2
+size = Vector2i(600, 400)
+ok_button_text = "保存"
+access = 2
+filters = PackedStringArray("*.json ; JSON Files")
+
+[node name="MessageDialog" type="AcceptDialog" parent="."]
+title = "提示"
+initial_position = 2
+size = Vector2i(350, 100)
+
+[node name="JamIdInputDialog" type="AcceptDialog" parent="."]
+title = "输入GameJam ID"
+initial_position = 2
+size = Vector2i(400, 150)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="JamIdInputDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 392.0
+offset_bottom = 101.0
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="JamIdInputDialog/VBoxContainer"]
+layout_mode = 2
+text = "请输入itch.io GameJam的ID:"
+
+[node name="JamIdInput" type="LineEdit" parent="JamIdInputDialog/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "例如: my-awesome-jam"
+
+[node name="FilterDialog" type="AcceptDialog" parent="."]
+title = "筛选条件"
+initial_position = 2
+size = Vector2i(400, 200)
+script = ExtResource("2_f4bhg")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="FilterDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 392.0
+offset_bottom = 151.0
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="FilterDialog/VBoxContainer"]
+layout_mode = 2
+text = "设置抽奖权重:"
+
+[node name="WeightAllContainer" type="HBoxContainer" parent="FilterDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="FilterDialog/VBoxContainer/WeightAllContainer"]
+layout_mode = 2
+text = "所有参赛作品权重:"
+
+[node name="WeightAllValue" type="SpinBox" parent="FilterDialog/VBoxContainer/WeightAllContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 1.0
+alignment = 1
+
+[node name="ApplyButton" type="Button" parent="FilterDialog/VBoxContainer/WeightAllContainer"]
+layout_mode = 2
+text = "应用"
+
+[node name="RandomizeContainer" type="HBoxContainer" parent="FilterDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="RandomizeButton" type="Button" parent="FilterDialog/VBoxContainer/RandomizeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "随机设置权重"
+
+[node name="ResetButton" type="Button" parent="FilterDialog/VBoxContainer/RandomizeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "重置权重"
+
+[connection signal="about_to_popup" from="PrizeDialog" to="." method="_on_prize_dialog_about_to_popup"]
+[connection signal="confirmed" from="PrizeDialog" to="." method="_on_prize_dialog_confirmed"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="file_selected" from="SaveFileDialog" to="." method="_on_save_file_dialog_file_selected"]
+[connection signal="confirmed" from="JamIdInputDialog" to="." method="_on_jam_id_input_dialog_confirmed"]
+[connection signal="pressed" from="FilterDialog/VBoxContainer/WeightAllContainer/ApplyButton" to="FilterDialog" method="_on_apply_button_pressed"]
+[connection signal="pressed" from="FilterDialog/VBoxContainer/RandomizeContainer/RandomizeButton" to="FilterDialog" method="_on_randomize_button_pressed"]
+[connection signal="pressed" from="FilterDialog/VBoxContainer/RandomizeContainer/ResetButton" to="FilterDialog" method="_on_reset_button_pressed"]

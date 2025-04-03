@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1ncydtbnnjsu"]
+
+[ext_resource type="Script" uid="uid://c6xdv2sujw81s" path="res://scripts/ui/entry_list_item.gd" id="1_87mkb"]
+
+[node name="EntryListItem" type="PanelContainer"]
+script = ExtResource("1_87mkb")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="EntryInfo" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="MarginContainer/HBoxContainer/EntryInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "作品标题"
+text_overrun_behavior = 3
+
+[node name="Author" type="Label" parent="MarginContainer/HBoxContainer/EntryInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65098, 0.65098, 0.65098, 1)
+theme_override_font_sizes/font_size = 12
+text = "作者名称"
+text_overrun_behavior = 3
+
+[node name="WeightContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/WeightContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "权重: "
+
+[node name="Weight" type="SpinBox" parent="MarginContainer/HBoxContainer/WeightContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 1.0
+alignment = 1
+
+[connection signal="value_changed" from="MarginContainer/HBoxContainer/WeightContainer/Weight" to="." method="_on_weight_value_changed"]

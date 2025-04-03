@@ -1,0 +1,37 @@
+extends PanelContainer
+# 参赛作品列表项
+
+# 引用节点
+@onready var title_label = %Title
+@onready var author_label = %Author
+@onready var weight_spinbox = %Weight
+
+# 条目数据
+var entry_data = null
+var raffle_manager
+
+func _ready():
+	raffle_manager = get_node("/root/RaffleManager")
+
+# 设置条目数据
+func setup(data):
+	entry_data = data
+	update_display()
+
+# 更新显示
+func update_display():
+	if entry_data:
+		title_label.text = entry_data.title
+		author_label.text = entry_data.user
+		weight_spinbox.value = entry_data.weight
+
+# 权重值变化
+func _on_weight_value_changed(value):
+	if entry_data:
+		entry_data.weight = value
+		
+		# 在raffle_manager中也更新条目权重
+		for i in range(raffle_manager.entries.size()):
+			if raffle_manager.entries[i].id == entry_data.id:
+				raffle_manager.entries[i].weight = value
+				break

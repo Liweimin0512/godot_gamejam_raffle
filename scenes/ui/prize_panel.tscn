@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3 uid="uid://cyqw4f3wmygfa"]
+
+[ext_resource type="Script" uid="uid://6drwb7nq6o8w" path="res://scripts/ui/prize_panel.gd" id="1_swi1w"]
+
+[node name="PrizePanel" type="Panel"]
+custom_minimum_size = Vector2(350, 200)
+script = ExtResource("1_swi1w")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "奖项设置"
+horizontal_alignment = 1
+
+[node name="PrizesContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PrizesList" type="VBoxContainer" parent="VBoxContainer/PrizesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="AddPrizeButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "添加奖项"
+
+[connection signal="pressed" from="VBoxContainer/AddPrizeButton" to="." method="_on_add_prize_button_pressed"]
