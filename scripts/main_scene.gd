@@ -8,15 +8,13 @@ var prizes = []
 var winners = {}
 # 当前正在抽取的奖项
 var current_prize = null
-# 抽奖动画期间的参与者
-var animation_entries = []
-# 抽奖动画速度控制
-var animation_speed = 0.05
-var animation_duration = 3.0
+# 是否正在抽奖
 var is_drawing = false
 
 # 用于存储粒子特效的场景
 var confetti_scene
+# 抽奖动画场景
+var raffle_animation_scene
 
 # 节点引用
 @onready var entries_list = $MainPanel/VBoxContainer/HBoxContainer/DataPanel/VBoxContainer/EntriesContainer/EntriesList
@@ -26,14 +24,11 @@ var confetti_scene
 @onready var draw_button = $MainPanel/VBoxContainer/HBoxContainer/DrawButton
 @onready var reset_button = $MainPanel/VBoxContainer/HBoxContainer/ResetButton
 @onready var http_request = $HTTPRequest
-@onready var prize_dialog = $PrizeDialog
-@onready var prize_name_input = $PrizeDialog/VBoxContainer/PrizeNameContainer/PrizeName
-@onready var prize_count_input = $PrizeDialog/VBoxContainer/PrizeCountContainer/PrizeCount
-@onready var prize_error_label = $PrizeDialog/VBoxContainer/ErrorLabel
+@onready var prize_dialog = $PrizeEditDialog
 @onready var file_dialog = $FileDialog
 @onready var message_dialog = $MessageDialog
 @onready var particles_container = $MainPanel/VBoxContainer/DrawArea/ParticlesContainer
-@onready var draw_animation = $DrawAnimation
+@onready var raffle_animation = $RaffleAnimation
 
 func _ready():
 	# 初始化UI
@@ -42,9 +37,11 @@ func _ready():
 	
 	# 加载场景
 	confetti_scene = load("res://scenes/confetti.tscn")
+	raffle_animation_scene = load("res://scenes/ui/animations/raffle_animation.tscn")
 	
-	# 创建抽奖动画
-	_create_draw_animation()
+	# 隐藏抽奖动画
+	if raffle_animation:
+		raffle_animation.hide()
 
 # 更新UI显示
 func update_ui():
@@ -59,28 +56,23 @@ func update_ui():
 		child.queue_free()
 	
 	# 显示所有参赛作品
+	var entry_item_scene = load("res://scenes/ui/entry_list_item.tscn")
 	for entry in entries:
-		var label = Label.new()
-		label.text = entry.title + " - " + entry.user
-		entries_list.add_child(label)
+		var item = entry_item_scene.instantiate()
+		item.setup(entry)
+		entries_list.add_child(item)
 	
 	# 显示所有奖项
+	var prize_item_scene = load("res://scenes/ui/prize_list_item.tscn")
 	for prize in prizes:
-		var hbox = HBoxContainer.new()
-		
-		var label = Label.new()
-		label.text = prize.name + " (x" + str(prize.count) + ")"
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		
-		var delete_btn = Button.new()
-		delete_btn.text = "删除"
-		delete_btn.pressed.connect(_on_delete_prize_pressed.bind(prize))
-		
-		hbox.add_child(label)
-		hbox.add_child(delete_btn)
-		prizes_list.add_child(hbox)
+		var item = prize_item_scene.instantiate()
+		item.setup(prize)
+		item.delete_requested.connect(_on_delete_prize_pressed)
+		item.edit_requested.connect(_on_edit_prize_pressed)
+		prizes_list.add_child(item)
 	
 	# 显示获奖者
+	var _winner_item_scene = load("res://scenes/ui/winner_list_item.tscn")
 	for prize_name in winners:
 		var prize_label = Label.new()
 		prize_label.text = prize_name + ":"
@@ -178,27 +170,21 @@ func _on_file_dialog_file_selected(path):
 
 # 添加奖项按钮
 func _on_add_prize_button_pressed():
-	prize_name_input.text = ""
-	prize_count_input.value = 1
-	if prize_error_label:
-		prize_error_label.text = ""
 	prize_dialog.popup_centered()
 
 # 奖项对话框确认
 func _on_prize_dialog_confirmed():
-	var prize_name = prize_name_input.text.strip_edges()
-	var count = int(prize_count_input.value)
+	var prize_name = prize_dialog.get_prize_name()
+	var count = prize_dialog.get_prize_count()
 	
 	if prize_name.is_empty():
-		if prize_error_label:
-			prize_error_label.text = "奖项名称不能为空"
+		prize_dialog.show_error("奖项名称不能为空")
 		return
 	
 	# 检查是否已经存在同名奖项
 	for prize in prizes:
 		if prize.name == prize_name:
-			if prize_error_label:
-				prize_error_label.text = "已经存在同名奖项"
+			prize_dialog.show_error("已经存在同名奖项")
 			return
 	
 	# 添加新奖项
@@ -224,6 +210,11 @@ func _on_delete_prize_pressed(prize):
 	prizes.erase(prize)
 	update_ui()
 
+# 编辑奖项
+func _on_edit_prize_pressed(prize):
+	prize_dialog.initialize_for_edit(prize)
+	prize_dialog.popup_centered()
+
 # 开始抽奖
 func _on_draw_button_pressed():
 	if is_drawing:
@@ -246,7 +237,7 @@ func _on_draw_button_pressed():
 	# 开始抽奖动画
 	is_drawing = true
 	draw_button.disabled = true
-	_start_draw_animation(available_entries)
+	_start_csgo_animation(current_prize, available_entries)
 
 # 重置抽奖
 func _on_reset_button_pressed():
@@ -323,60 +314,39 @@ func _draw_winner(available_entries):
 	# 如果出现意外情况，返回最后一个
 	return available_entries[available_entries.size() - 1]
 
-# 创建抽奖动画
-func _create_draw_animation():
-	var animation = Animation.new()
-	var track_idx = animation.add_track(Animation.TYPE_METHOD)
-	animation.track_set_path(track_idx, self.get_path())
+# 开始CSGO风格抽奖动画
+func _start_csgo_animation(prize, available_entries):
+	# 初始化抽奖动画
+	if not raffle_animation:
+		raffle_animation = raffle_animation_scene.instantiate()
+		add_child(raffle_animation)
 	
-	var duration = animation_duration
-	animation.length = duration
-	
-	# 添加动画更新的关键帧
-	var time = 0.0
-	while time < duration:
-		animation.track_insert_key(track_idx, time, {
-			"method": "_update_animation_entry",
-			"args": []
-		})
-		time += animation_speed
-	
-	# 添加动画结束的关键帧
-	animation.track_insert_key(track_idx, duration, {
-		"method": "_finalize_draw",
-		"args": []
-	})
-	
-	# 创建动画库
-	var library = AnimationLibrary.new()
-	library.add_animation("draw", animation)
-	draw_animation.add_animation_library("default", library)
-
-# 开始抽奖动画
-func _start_draw_animation(available_entries):
-	animation_entries = available_entries
-	current_winner_label.text = "抽奖中..."
-	draw_animation.play("default/draw")
-
-# 更新动画帧
-func _update_animation_entry():
-	if animation_entries.size() > 0:
-		var random_index = randi() % animation_entries.size()
-		var entry = animation_entries[random_index]
-		current_winner_label.text = entry.title + " - " + entry.user
-
-# 完成抽奖
-func _finalize_draw():
-	is_drawing = false
-	
-	# 获取可用参赛者
-	var available_entries = _get_available_entries()
-	if available_entries.size() == 0:
-		current_winner_label.text = "没有可用参赛者"
+	# 准备随机抽取获奖者
+	var winner = _draw_winner(available_entries)
+	if not winner:
+		message_dialog.dialog_text = "抽奖失败"
+		message_dialog.popup_centered()
+		is_drawing = false
+		draw_button.disabled = false
 		return
 	
-	# 抽取获奖者
-	var winner = _draw_winner(available_entries)
+	# 初始化动画并显示
+	raffle_animation.initialize(prize)
+	raffle_animation.show()
+	
+	# 开始动画
+	raffle_animation.start_animation(winner)
+	
+	# 等待动画完成
+	await get_tree().create_timer(5.0).timeout
+	
+	# 完成抽奖
+	_finalize_draw(winner)
+
+# 完成抽奖
+func _finalize_draw(winner):
+	is_drawing = false
+	
 	if not winner:
 		current_winner_label.text = "抽奖失败"
 		return

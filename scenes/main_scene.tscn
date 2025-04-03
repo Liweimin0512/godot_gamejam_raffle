@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://blx2qvbgrdnko"]
+[gd_scene load_steps=4 format=3 uid="uid://blx2qvbgrdnko"]
 
 [ext_resource type="Script" uid="uid://c1hfq24lfyxv8" path="res://scripts/main_scene.gd" id="1_0ow8o"]
 [ext_resource type="PackedScene" uid="uid://ddmg13bvxf4v0" path="res://scenes/ui/dialogs/prize_dialog.tscn" id="2_e2rwf"]
+[ext_resource type="PackedScene" uid="uid://cf3vc1eeykw5a" path="res://scenes/ui/animations/raffle_animation.tscn" id="3_kkfn2"]
 
 [node name="MainScene" type="Control"]
 layout_mode = 3
@@ -236,6 +237,9 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 
 [node name="PrizeEditDialog" parent="." instance=ExtResource("2_e2rwf")]
+
+[node name="RaffleAnimation" parent="." instance=ExtResource("3_kkfn2")]
+visible = false
 
 [node name="FileDialog" type="FileDialog" parent="."]
 title = "Open a File"

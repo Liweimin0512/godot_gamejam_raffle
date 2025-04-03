@@ -44,6 +44,8 @@ func fetch_data(params = {}):
 						entry_data["user"] = value
 					"是否有开发日志":
 						entry_data["has_devlog"] = (value == "有")
+					"图片":
+						entry_data["image"] = value					
 					_:
 						# 其他属性作为自定义属性
 						entry_data[header] = value
