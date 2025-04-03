@@ -2,11 +2,14 @@ extends Node
 # 抽奖管理器 - 单例模式
 # 负责处理抽奖核心逻辑
 
+# 引用资源类
+const PrizeResource = preload("res://scripts/data/resources/prize_resource.gd")
+
 signal raffle_completed(winner, prize)
 signal raffle_reset
+signal prizes_changed
 
 # 单例实例
-var _instance = null
 static func get_instance():
 	return Engine.get_main_loop().root.get_node_or_null("/root/RaffleManager")
 
@@ -25,9 +28,9 @@ func _ready():
 
 # 清除所有数据
 func reset_raffle():
-	# 重置所有奖项的已抽数量
+	# 重置所有奖项
 	for prize in prizes:
-		prize.drawn = 0
+		prize.reset()
 	
 	# 清空获奖记录
 	winners.clear()
@@ -40,43 +43,72 @@ func set_entries(new_entries):
 	entries = new_entries
 	
 # 添加奖项
-func add_prize(prize_name, count):
+func add_prize(prize_data):
 	# 检查是否已存在同名奖项
 	for prize in prizes:
-		if prize.name == prize_name:
+		if prize.name == prize_data.name:
 			return false
 	
 	# 添加新奖项
-	prizes.append({
-		"name": prize_name,
-		"count": count,
-		"drawn": 0
-	})
+	var prize_resource = PrizeResource.from_dict(prize_data)
+	prizes.append(prize_resource)
 	
 	# 初始化此奖项的获奖者列表
-	if not winners.has(prize_name):
-		winners[prize_name] = []
+	if not winners.has(prize_resource.id):
+		winners[prize_resource.id] = []
 	
+	prizes_changed.emit()
 	return true
 
-# 删除奖项
-func remove_prize(prize_name):
+# 更新奖项
+func update_prize(prize_id, new_prize_data):
 	for i in range(prizes.size()):
-		if prizes[i].name == prize_name:
+		if prizes[i].id == prize_id:
+			# 保留当前状态
+			var remaining_count = prizes[i].remaining_count
+			var current_winners = []
+			if winners.has(prize_id):
+				current_winners = winners[prize_id].duplicate()
+			
+			# 更新奖项
+			var updated_prize = PrizeResource.from_dict(new_prize_data)
+			
+			# 恢复状态
+			updated_prize.remaining_count = remaining_count
+			prizes[i] = updated_prize
+			
+			# 更新获奖者列表
+			if not winners.has(prize_id) and winners.has(updated_prize.id):
+				winners[updated_prize.id] = current_winners
+			
+			prizes_changed.emit()
+			return true
+	
+	return false
+
+# 删除奖项
+func remove_prize(prize_id):
+	for i in range(prizes.size()):
+		if prizes[i].id == prize_id:
 			# 删除获奖记录
-			if winners.has(prize_name):
-				winners.erase(prize_name)
+			if winners.has(prize_id):
+				winners.erase(prize_id)
 			
 			# 删除奖项
 			prizes.remove_at(i)
+			prizes_changed.emit()
 			return true
 	
 	return false
 
 # 获取下一个要抽取的奖项
 func get_next_prize():
-	for prize in prizes:
-		if prize.drawn < prize.count:
+	var active_prizes = prizes.filter(func(p): return p.is_active)
+	# 按优先级排序
+	active_prizes.sort_custom(func(a, b): return a.priority < b.priority)
+	
+	for prize in active_prizes:
+		if prize.remaining_count > 0:
 			return prize
 	return null
 
@@ -84,17 +116,26 @@ func get_next_prize():
 func get_available_prizes_count():
 	var count = 0
 	for prize in prizes:
-		count += prize.count - prize.drawn
+		if prize.is_active:
+			count += prize.remaining_count
 	return count
 
 # 获取所有未获奖的参赛者
-func get_available_entries():
+func get_available_entries(prize_to_draw = null):
 	var drawn_entries = []
 	
-	# 收集所有已抽取的参赛者
-	for prize_name in winners:
-		for winner in winners[prize_name]:
-			drawn_entries.append(winner)
+	# 如果奖项允许重复获奖，只考虑其他奖项的获奖者
+	for prize_id in winners:
+		var prize_allows_duplicates = false
+		if prize_to_draw:
+			for p in prizes:
+				if p.id == prize_id and p.allow_duplicate_winners:
+					prize_allows_duplicates = true
+					break
+		
+		if not prize_allows_duplicates:
+			for winner in winners[prize_id]:
+				drawn_entries.append(winner)
 	
 	# 过滤出未获奖的参赛者
 	var available = []
@@ -123,66 +164,92 @@ func draw_winner(available_entries, strategy = "weighted"):
 		_:
 			return _draw_winner_weighted(available_entries)
 
-# 基于权重的抽奖策略
+# 加权随机抽取
 func _draw_winner_weighted(available_entries):
-	# 计算总权重
-	var total_weight = 0.0
+	var total_weight = 0
 	for entry in available_entries:
-		total_weight += entry.weight
+		total_weight += entry.get("weight", 1.0)
 	
-	# 生成随机权重
-	var random_weight = randf() * total_weight
+	var random_value = randf() * total_weight
+	var current_sum = 0
 	
-	# 根据权重选择获奖者
-	var current_weight = 0.0
 	for entry in available_entries:
-		current_weight += entry.weight
-		if random_weight <= current_weight:
+		current_sum += entry.get("weight", 1.0)
+		if random_value <= current_sum:
 			return entry
 	
-	# 如果出现意外情况，返回最后一个
+	# 如果因为浮点误差没有返回，返回最后一个
 	return available_entries[available_entries.size() - 1]
 
-# 完全随机抽奖策略
+# 完全随机抽取
 func _draw_winner_random(available_entries):
-	var random_index = randi() % available_entries.size()
-	return available_entries[random_index]
+	var rand_index = randi() % available_entries.size()
+	return available_entries[rand_index]
 
 # 执行抽奖
 func perform_raffle(strategy = "weighted"):
-	# 获取当前可用奖项
+	# 获取下一个奖项
 	current_prize = get_next_prize()
 	if not current_prize:
-		return {"success": false, "message": "没有可用的奖项"}
+		return {"success": false, "message": "没有可抽取的奖项"}
 	
-	# 获取还未获奖的参赛者
-	var available_entries = get_available_entries()
+	# 获取可抽取的参赛者
+	var available_entries = get_available_entries(current_prize)
 	if available_entries.size() == 0:
-		return {"success": false, "message": "没有足够的参赛者"}
+		return {"success": false, "message": "没有可抽取的参赛者"}
 	
 	# 抽取获奖者
 	var winner = draw_winner(available_entries, strategy)
 	if not winner:
-		return {"success": false, "message": "抽奖失败"}
+		return {"success": false, "message": "抽取获奖者失败"}
 	
-	# 记录获奖者
-	winners[current_prize.name].append(winner)
+	# 记录获奖信息
+	if not winners.has(current_prize.id):
+		winners[current_prize.id] = []
 	
-	# 更新奖项已抽取数量
-	current_prize.drawn += 1
+	winners[current_prize.id].append(winner)
+	current_prize.add_winner(winner)
 	
 	# 发送抽奖完成信号
 	raffle_completed.emit(winner, current_prize)
 	
-	return {"success": true, "winner": winner, "prize": current_prize}
-
-# 导出抽奖结果为JSON
-func export_results():
-	var results = {
-		"timestamp": Time.get_datetime_string_from_system(),
-		"total_entries": entries.size(),
-		"prizes": prizes,
-		"winners": winners
+	return {
+		"success": true,
+		"winner": winner,
+		"prize": current_prize
 	}
+
+# 从JSON加载奖项配置
+func load_prizes_from_json(json_string):
+	var json = JSON.new()
+	var error = json.parse(json_string)
+	if error != OK:
+		push_error("解析奖项JSON失败: " + json.get_error_message())
+		return false
 	
-	return JSON.stringify(results, "\t")
+	var data = json.get_data()
+	if not data or typeof(data) != TYPE_ARRAY:
+		push_error("奖项数据格式错误，应为JSON数组")
+		return false
+	
+	# 清空当前奖项
+	prizes.clear()
+	winners.clear()
+	
+	# 加载奖项
+	for prize_data in data:
+		var prize = PrizeResource.from_dict(prize_data)
+		prizes.append(prize)
+		winners[prize.id] = []
+	
+	prizes_changed.emit()
+	return true
+
+# 导出奖项配置为JSON
+func export_prizes_to_json():
+	var prize_data = []
+	for prize in prizes:
+		prize_data.append(prize.to_dict())
+	
+	var json_string = JSON.stringify(prize_data, "  ")
+	return json_string

@@ -1,0 +1,113 @@
+[gd_scene load_steps=2 format=3 uid="uid://ddmg13bvxf4v0"]
+
+[ext_resource type="Script" path="res://scripts/ui/dialogs/prize_dialog.gd" id="1_g21lr"]
+
+[node name="PrizeDialog" type="Window"]
+title = "添加奖项"
+initial_position = 2
+size = Vector2i(400, 400)
+exclusive = true
+script = ExtResource("1_g21lr")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="NameContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/NameContainer"]
+layout_mode = 2
+text = "奖项名称"
+
+[node name="NameEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/NameContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "请输入奖项名称"
+
+[node name="CountContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/CountContainer"]
+layout_mode = 2
+text = "奖项数量"
+
+[node name="CountSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/CountContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 1.0
+max_value = 100.0
+value = 1.0
+rounded = true
+
+[node name="PriorityContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/PriorityContainer"]
+layout_mode = 2
+text = "抽取优先级 (数字越小优先级越高)"
+
+[node name="PrioritySpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/PriorityContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -100.0
+max_value = 100.0
+rounded = true
+
+[node name="DescriptionContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/DescriptionContainer"]
+layout_mode = 2
+text = "奖项描述"
+
+[node name="DescriptionEdit" type="TextEdit" parent="MarginContainer/VBoxContainer/DescriptionContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "可选，输入奖项描述"
+wrap_mode = 1
+
+[node name="SettingsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="DuplicateCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/SettingsContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "允许同一参赛者获得多个该奖项"
+
+[node name="IsActiveCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/SettingsContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "激活该奖项"
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "取消"
+
+[node name="ConfirmButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "确认"
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/ConfirmButton" to="." method="_on_confirm_button_pressed"]
