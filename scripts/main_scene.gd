@@ -42,6 +42,15 @@ var all_entries: Array = []       # 所有参赛作品
 var visible_entries: Array = []   # 当前可见的作品
 var entry_nodes: Array = []       # 当前显示的节点
 
+# 抽奖动画变量
+var is_drawing: bool = false      # 是否正在抽奖中
+var draw_speed: float = 20.0      # 初始抽奖速度
+var draw_deceleration: float = 0.95  # 减速因子
+var min_draw_speed: float = 0.5   # 最小抽奖速度
+var draw_duration: float = 0.0    # 当前抽奖持续时间
+var max_draw_duration: float = 3.0  # 最大抽奖持续时间
+var selected_entry: EntryResource = null  # 选中的作品
+
 ## 节点准备就绪时调用
 func _ready() -> void:
 	# 连接信号
@@ -104,18 +113,84 @@ func _create_carousel_shader() -> void:
 
 ## 每帧处理轮播效果
 func _process(delta: float) -> void:
-	if not enable_carousel or entry_nodes.is_empty() or is_transitioning:
+	if is_drawing:
+		# 处理抽奖动画
+		_process_drawing_animation(delta)
+	elif not enable_carousel or entry_nodes.is_empty() or is_transitioning:
 		return
+	else:
+		# 更新轮播位置
+		carousel_position += carousel_speed * delta * continuous_direction
+		if carousel_position >= 1.0 or carousel_position <= -1.0:
+			carousel_position = 0.0
+			# 轮换一个作品
+			_rotate_carousel_entries()
+		
+		# 应用轮播效果
+		_apply_carousel_effect(delta)
+
+## 处理抽奖动画
+func _process_drawing_animation(delta: float) -> void:
+	# 更新抽奖持续时间
+	draw_duration += delta
 	
-	# 更新轮播位置
-	carousel_position += carousel_speed * delta * continuous_direction
-	if carousel_position >= 1.0 or carousel_position <= -1.0:
-		carousel_position = 0.0
-		# 轮换一个作品
-		_rotate_carousel_entries()
+	# 减速
+	draw_speed *= draw_deceleration
 	
-	# 应用轮播效果
-	_apply_carousel_effect(delta)
+	# 移动作品
+	var scroll_amount = draw_speed * delta
+	entries_scroll_container.scroll_horizontal += scroll_amount * 100
+	
+	# 如果速度足够慢或者已经达到最大持续时间，停止抽奖
+	if draw_speed <= min_draw_speed or draw_duration >= max_draw_duration:
+		_finish_drawing()
+
+## 完成抽奖
+func _finish_drawing() -> void:
+	is_drawing = false
+	draw_button.disabled = false
+	
+	# 确定中间位置的作品
+	var center_pos = entries_scroll_container.size.x / 2
+	var closest_entry = null
+	var closest_distance = INF
+	
+	for item in entry_nodes:
+		var item_center = item.global_position.x + (item.size.x * item.scale.x) / 2
+		var distance = abs(item_center - (entries_scroll_container.global_position.x + center_pos))
+		
+		if distance < closest_distance:
+			closest_distance = distance
+			closest_entry = item
+	
+	# 获取选中作品的数据
+	if closest_entry and closest_entry.entry:
+		selected_entry = closest_entry.entry
+		
+		# 显示获奖弹窗
+		_show_winner_dialog(selected_entry)
+		
+		# 更新当前获奖者标签
+		current_winner_label.text = "恭喜 %s 获奖!" % selected_entry.title
+
+## 显示获奖弹窗
+func _show_winner_dialog(winner: EntryResource) -> void:
+	var dialog = load("res://scenes/ui/winner_dialog.tscn").instantiate()
+	add_child(dialog)
+	dialog.set_winner(winner)
+	dialog.confirmed.connect(_on_winner_dialog_confirmed)
+
+## 获奖弹窗确认回调
+func _on_winner_dialog_confirmed(winner: EntryResource) -> void:
+	# 将获奖者添加到获奖者列表
+	_add_winner_to_list(winner)
+	
+	# 通知RaffleManager
+	var available_entries = RaffleManager.get_available_entries(devlog_filter_checkbox.button_pressed)
+	for entry in available_entries:
+		if entry.id == winner.id:
+			RaffleManager.draw_winner_from_list([entry])
+			break
 
 ## 轮换轮播作品
 func _rotate_carousel_entries() -> void:
@@ -199,60 +274,26 @@ func _apply_carousel_effect(delta: float) -> void:
 		
 		# 应用缩放
 		item.scale = Vector2(new_scale, new_scale)
-		
-		# 应用旋转（减小角度使动画更平滑）
-		var rotation_factor = sin(time_offset * 0.3 + i * 0.5) * (rotation_max * 0.8)
-		item.rotation = rotation_factor
-		
-		# 应用透明度
-		var alpha = lerp(1.0, 0.6, normalized_distance)
-		item.modulate.a = alpha
-		
-		# Z索引（使中心项在顶部）
-		item.z_index = 10 - int(normalized_distance * 10)
 
-## 更新整个UI界面
+## 更新UI
 func update_ui() -> void:
-	_update_entries_carousel()
-	_update_winners_list()
-	_update_draw_button()
-
-## 更新参赛作品轮播
-func _update_entries_carousel() -> void:
-	# 清空列表
-	for child in entries_list.get_children():
-		child.queue_free()
+	# 获取所有可用作品
+	all_entries = DataManager.get_entries()
 	
-	# 重置数组
-	entry_nodes.clear()
-	all_entries.clear()
-	visible_entries.clear()
+	# 应用过滤器
+	var filtered_entries = []
+	for entry in all_entries:
+		if not devlog_filter_checkbox.button_pressed or entry.has_devlog:
+			filtered_entries.append(entry)
 	
-	# 获取条目并应用过滤
-	all_entries = DataManager.get_entries().duplicate()
-	var show_devlog_only: bool = devlog_filter_checkbox.button_pressed
-	
-	# 应用过滤
-	if show_devlog_only:
-		var filtered_entries = []
-		for entry in all_entries:
-			if entry.has_devlog:
-				filtered_entries.append(entry)
-		all_entries = filtered_entries
-	
-	# 如果没有条目，返回
-	if all_entries.is_empty():
-		return
-	
-	# 随机打乱顺序以增加趣味性
-	all_entries.shuffle()
-	
-	# 选择要显示的条目
-	for i in range(min(VISIBLE_ENTRIES, all_entries.size())):
-		visible_entries.append(all_entries[i])
+	# 更新可见作品
+	visible_entries = filtered_entries.duplicate()
 	
 	# 更新轮播项目
 	_update_carousel_items()
+	
+	# 更新获奖者列表
+	_update_winners_list()
 
 ## 更新轮播项目
 func _update_carousel_items() -> void:
@@ -262,168 +303,117 @@ func _update_carousel_items() -> void:
 	
 	entry_nodes.clear()
 	
-	# 添加条目到UI
-	var entry_item_scene: PackedScene = load("res://scenes/ui/entry_list_item.tscn")
+	# 如果没有作品，直接返回
+	if visible_entries.is_empty():
+		return
 	
-	for entry in visible_entries:
-		var item = entry_item_scene.instantiate()
+	# 确保有足够的作品显示
+	while visible_entries.size() < VISIBLE_ENTRIES:
+		visible_entries.append_array(visible_entries.duplicate())
+	
+	# 创建可见的作品项目
+	var start_index = 0
+	var end_index = min(start_index + VISIBLE_ENTRIES, visible_entries.size())
+	
+	for i in range(start_index, end_index):
+		var entry = visible_entries[i]
+		var item = load("res://scenes/ui/entry_list_item.tscn").instantiate()
 		entries_list.add_child(item)
+		item.setup(entry)
 		entry_nodes.append(item)
-		
-		# 设置条目数据
-		if item.has_method("setup"):
-			item.setup(entry)
-		else:
-			printerr("entry_list_item.tscn 缺少 setup 方法")
-		
-		# 设置基础属性
-		item.custom_minimum_size = Vector2(ENTRY_WIDTH, item.custom_minimum_size.y)
-		item.pivot_offset = Vector2(ENTRY_WIDTH/2, item.custom_minimum_size.y/2)
-		
-		# 添加鼠标悬停效果
-		_add_hover_effects(item)
-	
-	# 立即应用一次效果
-	_apply_carousel_effect(0.1)
-
-## 添加鼠标悬停效果
-func _add_hover_effects(item: Control) -> void:
-	# 确保项目可以接收鼠标事件
-	item.mouse_filter = Control.MOUSE_FILTER_PASS
-	
-	# 连接鼠标信号
-	item.mouse_entered.connect(func(): _on_item_mouse_entered(item))
-	item.mouse_exited.connect(func(): _on_item_mouse_exited(item))
-
-## 鼠标进入项目
-func _on_item_mouse_entered(item: Control) -> void:
-	# 创建缩放动画
-	var tween = create_tween()
-	tween.tween_property(item, "scale", Vector2(hover_scale, hover_scale), 0.2).set_ease(Tween.EASE_OUT)
-	
-	# 添加发光效果
-	var panel = item as PanelContainer
-	if panel:
-		var style_box = panel.get_theme_stylebox("panel").duplicate()
-		if style_box is StyleBoxFlat:
-			style_box.shadow_size = 15
-			style_box.shadow_color = Color(1, 1, 1, 0.3)
-			panel.add_theme_stylebox_override("panel", style_box)
-
-## 鼠标离开项目
-func _on_item_mouse_exited(item: Control) -> void:
-	# 恢复原始状态（轮播效果会自动处理）
-	var tween = create_tween()
-	tween.tween_property(item, "scale", Vector2(1, 1), 0.2).set_ease(Tween.EASE_IN)
-	
-	# 移除发光效果
-	var panel = item as PanelContainer
-	if panel:
-		panel.remove_theme_stylebox_override("panel")
 
 ## 更新获奖者列表
 func _update_winners_list() -> void:
-	# 清空列表
+	# 清空当前获奖者
 	for child in winners_list.get_children():
 		child.queue_free()
 	
-	# 获取获奖者
-	var current_winners: Array = RaffleManager.get_winners()
-	if current_winners.is_empty():
+	# 获取获奖者列表
+	var winners = RaffleManager.get_winners()
+	
+	# 创建获奖者项目
+	for winner in winners:
+		_add_winner_to_list(winner)
+
+## 添加获奖者到列表
+func _add_winner_to_list(winner: EntryResource) -> void:
+	var item = load("res://scenes/ui/entry_list_item.tscn").instantiate()
+	winners_list.add_child(item)
+	item.setup(winner)
+	
+	# 添加动画效果
+	item.scale = Vector2.ZERO
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_ELASTIC)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(item, "scale", Vector2.ONE, 0.5)
+
+## 开始抽奖按钮点击
+func _on_draw_button_pressed() -> void:
+	# 检查是否有可用作品
+	var available_entries = RaffleManager.get_available_entries(devlog_filter_checkbox.button_pressed)
+	if available_entries.is_empty():
+		OS.alert("没有可用的参赛作品进行抽奖", "提示")
 		return
 	
-	# 添加标题
-	var title_label: Label = Label.new()
-	title_label.text = "获奖名单:"
-	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	winners_list.add_child(title_label)
+	# 禁用抽奖按钮，防止重复点击
+	draw_button.disabled = true
 	
-	# 添加获奖者到列表
-	var entry_item_scene: PackedScene = load("res://scenes/ui/entry_list_item.tscn")
-	for winner in current_winners:
-		var item = entry_item_scene.instantiate()
-		winners_list.add_child(item)
-		
-		# 设置获奖者数据
-		if item.has_method("setup"):
-			item.setup(winner)
-		else:
-			printerr("entry_list_item.tscn 缺少 setup 方法")
-		
-		# 设置静态样式（无动画）
-		item.scale = Vector2(1, 1)
-		item.rotation = 0
-		item.modulate.a = 1
-		item.z_index = 0
+	# 开始抽奖动画
+	_start_drawing_animation()
 
-## 更新抽奖按钮状态
-func _update_draw_button() -> void:
-	# 获取可用条目数量
-	var respect_filter: bool = devlog_filter_checkbox.button_pressed
-	var available_count: int = RaffleManager.get_available_entries(respect_filter).size()
+## 开始抽奖动画
+func _start_drawing_animation() -> void:
+	is_drawing = true
+	draw_speed = 20.0
+	draw_duration = 0.0
 	
-	# 如果没有可用条目，禁用抽奖按钮
-	draw_button.disabled = available_count <= 0
-
-## 当获奖者被抽出时调用
-func _on_winner_drawn(winner) -> void:
-	# 更新当前获奖者显示
-	current_winner_label.text = "当前幸运儿: %s (%s)" % [winner.title, winner.author]
-	
-	# 更新UI
+	# 确保有足够的作品显示
 	update_ui()
 	
-	# 短暂延迟后恢复轮播
-	await get_tree().create_timer(0.5).timeout
-	enable_carousel = true
+	# 随机打乱可见作品
+	visible_entries.shuffle()
+	_update_carousel_items()
 
-## 当抽奖重置时调用
-func _on_raffle_reset() -> void:
+## 重置按钮点击
+func _on_reset_button_pressed() -> void:
+	# 重置RaffleManager
+	RaffleManager.reset()
+	
+	# 重置UI
 	current_winner_label.text = "等待抽取幸运儿..."
 	update_ui()
 
-## 抽奖按钮处理
-func _on_draw_button_pressed() -> void:
-	# 暂停轮播
-	enable_carousel = false
-	current_winner_label.text = "正在抽取中..."
-	
-	# 获取可用条目
-	var respect_filter: bool = devlog_filter_checkbox.button_pressed
-	var available_entries: Array = RaffleManager.get_available_entries(respect_filter)
-	
-	if available_entries.is_empty():
-		current_winner_label.text = "没有可抽奖的作品"
-		enable_carousel = true
-		return
-	
-	# 执行抽奖
-	var winner = RaffleManager.draw_winner_from_list(available_entries)
-	if not winner:
-		printerr("抽奖失败")
-		current_winner_label.text = "抽奖失败"
-		enable_carousel = true
-
-## 重置按钮处理
-func _on_reset_button_pressed() -> void:
-	RaffleManager.reset()
-	# UI更新由raffle_reset信号触发
-
-## 过滤器切换处理
-func _on_devlog_filter_toggled(_button_pressed: bool) -> void:
+## 开发日志过滤器切换
+func _on_devlog_filter_toggled(button_pressed: bool) -> void:
 	update_ui()
 
-## 导出按钮处理
+## 导出按钮点击
 func _on_export_button_pressed() -> void:
+	# 检查是否有获奖者
+	if RaffleManager.get_winners().is_empty():
+		OS.alert("没有获奖者可导出", "提示")
+		return
+	
+	# 显示导出对话框
 	export_dialog.popup_centered()
 
-## 导出对话框确认处理
+## 导出对话框确认
 func _on_export_dialog_confirmed(path: String) -> void:
 	# 使用DataManager导出获奖者
 	var result: Dictionary = DataManager.export_winners(path)
 	
 	if result.get("success", false):
-		OS.alert("导出成功！\n已保存到: %s" % path, "导出完成")
+		OS.alert("导出成功: %s" % path, "成功")
 	else:
-		var error_message: String = result.get("message", "未知错误")
-		OS.alert("导出文件失败！\n错误: %s" % error_message, "导出错误")
+		OS.alert("导出失败: %s" % result.get("message", "未知错误"), "错误")
+
+## 获奖者抽取回调
+func _on_winner_drawn(winner: EntryResource) -> void:
+	# 更新UI
+	update_ui()
+
+## 抽奖重置回调
+func _on_raffle_reset() -> void:
+	# 更新UI
+	update_ui()

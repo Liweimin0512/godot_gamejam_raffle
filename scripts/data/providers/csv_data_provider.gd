@@ -52,6 +52,8 @@ func fetch_data(params : Dictionary = {}) -> bool:
 							entry_data["image"] = load(value)
 						else:
 							push_warning("无法加载图片: %s" % value)
+					"游戏链接":
+						entry_data["url"] = value
 					_:
 						# 其他属性作为自定义属性
 						entry_data[header] = value
